@@ -36,7 +36,7 @@ public class AccountController(AppDbContext context, ITokenService tokenService)
         return user.ToDto(tokenService);
     }
 
-    [Authorize]
+    // [Authorize]
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {

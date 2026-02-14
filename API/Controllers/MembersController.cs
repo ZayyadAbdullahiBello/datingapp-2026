@@ -1,34 +1,33 @@
-using API.Data;
+using System.Security.Claims;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
     [Authorize]
-    public class MembersController(IMemberRepository memberRepository, IPhotoService photoService) : BaseApiController
+    public class MembersController(IMemberRepository memberRepository,
+        IPhotoService photoService) : BaseApiController
     {
-        
-        [HttpGet] // localhost:/api/members
-        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
+        [HttpGet]
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers(
+                [FromQuery] MemberParams memberParams)
         {
-            return Ok(await memberRepository.GetMembersAsync());
+            memberParams.CurrentMemberId = User.GetMemberId();
 
+            return Ok(await memberRepository.GetMembersAsync(memberParams));
         }
 
-        
-        [HttpGet("{id}")] // localhost:/api/members/bob-id
+        [HttpGet("{id}")] // locahost:5001/api/members/bob-id
         public async Task<ActionResult<Member>> GetMember(string id)
         {
             var member = await memberRepository.GetMemberByIdAsync(id);
 
-            if (member == null)
-                return NotFound();
+            if (member == null) return NotFound();
 
             return member;
         }
@@ -141,6 +140,5 @@ namespace API.Controllers
 
             return BadRequest("Problem deleting the photo");
         }
-
     }
 }

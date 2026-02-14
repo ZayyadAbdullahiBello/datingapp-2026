@@ -17,8 +17,5 @@ import { Router, RouterOutlet } from '@angular/router';
 // ****FOLLOW COME CODE OO BUT CHANGED IT TO HOW IT IS IN THE TUTORIAL***************
 
 export class App{
-  
   protected router = inject(Router);
-
-
 }

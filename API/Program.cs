@@ -1,12 +1,13 @@
 using System.Text;
 using API.Data;
+using API.Entities;
 using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,11 +28,21 @@ builder.Services.AddScoped<ILikesRepository, LikesRepository>();
 builder.Services.AddScoped<LogUserActivity>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration
     .GetSection("CloudinarySettings"));
+
+builder.Services.AddIdentityCore<AppUser>(opt =>
+{
+    opt.Password.RequireNonAlphanumeric = false;
+    opt.User.RequireUniqueEmail = true;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(Options =>
+    .AddJwtBearer(options =>
     {
-        var tokenKey = builder.Configuration["tokenKey"] ?? throw new Exception("Token key not found - Program.cs");
-        Options.TokenValidationParameters = new TokenValidationParameters
+        var tokenKey = builder.Configuration["TokenKey"]
+            ?? throw new Exception("Token key not found - Program.cs");
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
@@ -40,17 +51,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// **********Removed cos it won't be covered in the course but helps in adpi documentation so will be useful for me***********************
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-// builder.Services.AddOpenApi();
-// **********Removed cos it won't be covered in the course but helps in adpi documentation so will be useful for me***********************
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
+    .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline. MAKE SURE ORDERING IS LIKE THIS
-
+// Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
+app.UseCors(x => x
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+    .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -62,8 +75,9 @@ var services = scope.ServiceProvider;
 try
 {
     var context = services.GetRequiredService<AppDbContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedUsers(context);
+    await Seed.SeedUsers(userManager);
 }
 catch (Exception ex)
 {
@@ -72,5 +86,3 @@ catch (Exception ex)
 }
 
 app.Run();
-
-

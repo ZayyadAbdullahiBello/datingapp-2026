@@ -13,22 +13,18 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>
     public DbSet<Photo> Photos { get; set; }
     public DbSet<MemberLike> Likes { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<Connection> Connections { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // modelBuilder.Entity<IdentityRole>()
-        //     .HasData(
-        //         new IdentityRole { Id = "member-id", Name = "Member", NormalizedName = "MEMBER" },
-        //         new IdentityRole { Id = "moderator-id", Name = "Moderator", NormalizedName = "MODERATOR" },
-        //         new IdentityRole { Id = "admin-id", Name = "Admin", NormalizedName = "ADMIN" }
-        //     );
         modelBuilder.Entity<IdentityRole>()
             .HasData(
-                new IdentityRole { Id = "member-id", Name = "Member", NormalizedName = "MEMBER", ConcurrencyStamp = "a1f6d0a5-8c5b-4b3b-9f17-3f2f9b0b5f1a" },
-                new IdentityRole { Id = "moderator-id", Name = "Moderator", NormalizedName = "MODERATOR", ConcurrencyStamp = "b2d9d8c2-2f49-4c44-9fd2-4a9c3c6d8f73" },
-                new IdentityRole { Id = "admin-id", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "c3e1a7f0-6c65-4c2e-8a2c-65a0f2b6c8d1" }
+                new IdentityRole { Id = "member-id", Name = "Member", NormalizedName = "MEMBER", ConcurrencyStamp = "member-role-stamp"},
+                new IdentityRole { Id = "moderator-id", Name = "Moderator", NormalizedName = "MODERATOR", ConcurrencyStamp = "moderator-role-stamp" },
+                new IdentityRole { Id = "admin-id", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "admin-role-stamp" }
             );
 
         modelBuilder.Entity<Message>()

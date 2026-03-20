@@ -1,6 +1,6 @@
 💘 DatingApp 2026
 
-A modern, full-stack social networking application built with .NET 9 and Angular 19.
+A modern, full-stack social networking application built with .NET 10 and Angular 21.
 This project features real-time messaging, photo management, and a robust role-based authorization system.
 
 🚀 Features
@@ -26,7 +26,7 @@ SQLite (Development)
 Security: JWT Authentication & ASP.NET Identity Roles
 External Services: Cloudinary API (image storage)
 🔜 Frontend
-Framework: Angular 19
+Framework: Angular 21
 State Management: RxJS Observables & Signals
 Real-time: SignalR Client
 ☁️ Hosting & Deployment
@@ -55,7 +55,7 @@ Uses Azure SQL Server, with migrations automatically applied on startup.
 
 🔧 Getting Started
 1️⃣ Clone the Repository
-git clone https://github.com/yourusername/datingapp-2026.git
+git clone https://github.com/ZayyadAbdullahiBello/datingapp-2026.git
 cd datingapp-2026
 
 2️⃣ Backend Setup
@@ -74,3 +74,6 @@ Make sure you have:
 .NET SDK installed
 Node.js (v22 recommended)
 SQL Server / SQLite configured
+
+Live app:
+https://zayds-da-2026.azurewebsites.net/
